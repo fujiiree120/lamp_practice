@@ -11,12 +11,19 @@ if(is_logined() === false){
   redirect_to(LOGIN_URL);
 }
 
+$token = get_post('csrf_token');
+
+if(is_valid_csrf_token($token) === false){
+  set_error('不正な処理が発生しました。');
+  redirect_to(ADMIN_URL);
+}
 $db = get_db_connect();
 //$userにmyadminから取得したユーザー情報を格納
 $user = get_login_user($db);
 //functions.php 各変数にカートidと数量を格納
 $cart_id = get_post('cart_id');
 $amount = get_post('amount');
+
 //model/cart.php amountを変更するsql文
 if(update_cart_amount($db, $cart_id, $amount)){
   set_message('購入数を更新しました。');

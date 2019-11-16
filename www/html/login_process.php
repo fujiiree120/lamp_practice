@@ -11,9 +11,13 @@ if(is_logined() === true){
 //$各関数にpostで取得した情報を格納
 $name = get_post('name');
 $password = get_post('password');
+$token = get_post('csrf_token');
 
+if(is_valid_csrf_token($token) === false){
+  set_error('不正な処理が発生しました。');
+  redirect_to(LOGIN_URL);
+}
 $db = get_db_connect();
-
 //model/user.php $userがセットされなければエラー
 $user = login_as($db, $name, $password);
 if( $user === false){
