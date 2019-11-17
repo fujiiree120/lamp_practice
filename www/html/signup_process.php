@@ -12,7 +12,12 @@ if(is_logined() === true){
 $name = get_post('name');
 $password = get_post('password');
 $password_confirmation = get_post('password_confirmation');
+$token = get_post('csrf_token');
 
+if(is_valid_csrf_token($token) === false){
+  set_error('不正な処理が発生しました。');
+  redirect_to(SIGNUP_URL);
+}
 $db = get_db_connect();
 //model/user.phpに各関数ある ユーザー登録をする
 try{
