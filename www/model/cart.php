@@ -110,7 +110,9 @@ function purchase_carts($db, $carts){
   if(validate_cart_purchase($carts) === false){
     return false;
   }
-  foreach($carts as $cart){
+  //beginTransaction
+  
+  foreach($carts as $cart){ 
     if(update_item_stock(
         $db, 
         $cart['item_id'], 
@@ -118,9 +120,18 @@ function purchase_carts($db, $carts){
       ) === false){
       set_error($cart['name'] . 'の購入に失敗しました。');
     }
+    //ここにpurchase関数
   }
   
   delete_user_carts($db, $carts[0]['user_id']);
+
+  /*
+  if(delete_user_carts === false){
+  rollback return false
+   }
+  commit
+  return true
+ */
 }
 
 function delete_user_carts($db, $user_id){
