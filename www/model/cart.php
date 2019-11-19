@@ -111,7 +111,7 @@ function purchase_carts($db, $carts){
     return false;
   }
   //beginTransaction
-  //ここにpurchase_logs関数
+   //ここにpurchase_logs関数
   insert_order_logs($db, $user_id);
   
   foreach($carts as $cart){ 
