@@ -111,6 +111,8 @@ function purchase_carts($db, $carts){
     return false;
   }
   //beginTransaction
+  //ここにpurchase_logs関数
+  insert_order_logs($db, $user_id);
   
   foreach($carts as $cart){ 
     if(update_item_stock(
@@ -120,7 +122,7 @@ function purchase_carts($db, $carts){
       ) === false){
       set_error($cart['name'] . 'の購入に失敗しました。');
     }
-    //ここにpurchase関数
+    //ここにpurchase_details関数
   }
   
   delete_user_carts($db, $carts[0]['user_id']);
@@ -173,3 +175,14 @@ function validate_cart_purchase($carts){
   return true;
 }
 
+function insert_order_logs($db, $user_id){
+  $sql = "
+    INSERT INTO
+      order_logs(
+        user_id
+      )
+    VALUES(:user_id)
+  ";
+  $params = array(':user_id' => $user_id,);
+  return execute_query($db, $sql, $params);
+}
