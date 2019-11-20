@@ -106,14 +106,22 @@ function delete_cart($db, $cart_id){
 update_item?stockでstock - amountしエラーを確認
 エラーがなければユーザーのカートテーブルを削除
 */
-function purchase_carts($db, $carts){
+function purchase_carts($db, $carts, $user_id){
   if(validate_cart_purchase($carts) === false){
     return false;
   }
   //beginTransaction
+  $db->beginTransaction();
    //ここにpurchase_logs関数
-  insert_order_logs($db, $user_id);
-  
+  $result = insert_order_logs($db, $user_id);
+
+  if($result === false){
+    $db->rollback(); 
+      return false;
+   }
+
+  $id = $db->lastInsertId('order_log_id');
+
   foreach($carts as $cart){ 
     if(update_item_stock(
         $db, 
@@ -122,18 +130,27 @@ function purchase_carts($db, $carts){
       ) === false){
       set_error($cart['name'] . 'の購入に失敗しました。');
     }
-    //ここにpurchase_details関数
+      $item_id = $cart['item_id'];
+      $amount = $cart['amount'];
+      $price = $cart['price'];
+
+      $result = insert_order_details($db, $id, $item_id, $amount, $price);
+      
+      if($result === false){
+        $db->rollback(); 
+          return false;
+       }
   }
   
-  delete_user_carts($db, $carts[0]['user_id']);
-
-  /*
-  if(delete_user_carts === false){
-  rollback return false
+  $result = delete_user_carts($db, $carts[0]['user_id']);
+  
+  if($result === false){
+    $db->rollback(); 
+      return false;
    }
-  commit
-  return true
- */
+
+  $db->commit();
+  return true;
 }
 
 function delete_user_carts($db, $user_id){
@@ -183,6 +200,21 @@ function insert_order_logs($db, $user_id){
       )
     VALUES(:user_id)
   ";
-  $params = array(':user_id' => $user_id,);
+  $params = array(':user_id' => $user_id);
+  return execute_query($db, $sql, $params);
+}
+
+function insert_order_details($db, $id, $item_id, $amount, $price){
+  $sql = "
+    INSERT INTO
+      order_details(
+         order_log_id,
+         item_id,
+         amount,
+         purchase_price
+      )
+    VALUES(:order_log_id, :item_id, :amount, :purchase_price)
+  ";
+  $params = array(':order_log_id' => $id, ':item_id' => $item_id, ':amount' => $amount, ':purchase_price' => $price,);
   return execute_query($db, $sql, $params);
 }
