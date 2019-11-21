@@ -113,14 +113,12 @@ function purchase_carts($db, $carts, $user_id){
   //beginTransaction
   $db->beginTransaction();
    //ここにpurchase_logs関数
-  $result = insert_order_logs($db, $user_id);
-
-  if($result === false){
+  if(insert_order_log($db, $user_id) === false){
     $db->rollback(); 
       return false;
    }
 
-  $id = $db->lastInsertId('order_log_id');
+  $order_log_id = $db->lastInsertId();
 
   foreach($carts as $cart){ 
     if(update_item_stock(
@@ -130,23 +128,16 @@ function purchase_carts($db, $carts, $user_id){
       ) === false){
       set_error($cart['name'] . 'の購入に失敗しました。');
     }
-      $item_id = $cart['item_id'];
-      $amount = $cart['amount'];
-      $price = $cart['price'];
 
-      $result = insert_order_details($db, $id, $item_id, $amount, $price);
-      
-      if($result === false){
-        $db->rollback(); 
-          return false;
-       }
-  }
-  
-  $result = delete_user_carts($db, $carts[0]['user_id']);
-  
-  if($result === false){
-    $db->rollback(); 
+    if(insert_order_detail($db, $order_log_id, $cart['item_id'], $cart['amount'], $cart['price']) === false){
+      $db->rollback(); 
       return false;
+    }
+  }
+    
+  if(delete_user_carts($db, $carts[0]['user_id']) === false){
+    $db->rollback(); 
+    return false;
    }
 
   $db->commit();
@@ -192,7 +183,7 @@ function validate_cart_purchase($carts){
   return true;
 }
 
-function insert_order_logs($db, $user_id){
+function insert_order_log($db, $user_id){
   $sql = "
     INSERT INTO
       order_logs(
@@ -204,7 +195,7 @@ function insert_order_logs($db, $user_id){
   return execute_query($db, $sql, $params);
 }
 
-function insert_order_details($db, $id, $item_id, $amount, $price){
+function insert_order_detail($db, $order_log_id, $item_id, $amount, $price){
   $sql = "
     INSERT INTO
       order_details(
@@ -215,6 +206,11 @@ function insert_order_details($db, $id, $item_id, $amount, $price){
       )
     VALUES(:order_log_id, :item_id, :amount, :purchase_price)
   ";
-  $params = array(':order_log_id' => $id, ':item_id' => $item_id, ':amount' => $amount, ':purchase_price' => $price,);
+  $params = array(
+    ':order_log_id' => $order_log_id, 
+    ':item_id' => $item_id, 
+    ':amount' => $amount, 
+    ':purchase_price' => $price,
+  );
   return execute_query($db, $sql, $params);
 }
