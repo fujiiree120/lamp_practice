@@ -21,7 +21,7 @@ $user = get_login_user($db);
 $carts = get_user_carts($db, $user['user_id']);
 //cart.phpに関数　エラーが出ればメッセージを出し、成功すればカートページへ
 
-if(purchase_carts($db, $carts) === false){
+if(purchase_carts($db, $carts, $user['user_id']) === false){
   set_error('商品が購入できませんでした。');
   redirect_to(CART_URL);
 } 

@@ -106,12 +106,20 @@ function delete_cart($db, $cart_id){
 update_item?stockでstock - amountしエラーを確認
 エラーがなければユーザーのカートテーブルを削除
 */
-function purchase_carts($db, $carts){
+function purchase_carts($db, $carts, $user_id){
   if(validate_cart_purchase($carts) === false){
     return false;
   }
   //beginTransaction
-  
+  $db->beginTransaction();
+   //ここにpurchase_logs関数
+  if(insert_order_log($db, $user_id) === false){
+    $db->rollback(); 
+      return false;
+   }
+
+  $order_log_id = $db->lastInsertId();
+
   foreach($carts as $cart){ 
     if(update_item_stock(
         $db, 
@@ -120,18 +128,20 @@ function purchase_carts($db, $carts){
       ) === false){
       set_error($cart['name'] . 'の購入に失敗しました。');
     }
-    //ここにpurchase関数
-  }
-  
-  delete_user_carts($db, $carts[0]['user_id']);
 
-  /*
-  if(delete_user_carts === false){
-  rollback return false
+    if(insert_order_detail($db, $order_log_id, $cart['item_id'], $cart['amount'], $cart['price']) === false){
+      $db->rollback(); 
+      return false;
+    }
+  }
+    
+  if(delete_user_carts($db, $carts[0]['user_id']) === false){
+    $db->rollback(); 
+    return false;
    }
-  commit
-  return true
- */
+
+  $db->commit();
+  return true;
 }
 
 function delete_user_carts($db, $user_id){
@@ -173,3 +183,34 @@ function validate_cart_purchase($carts){
   return true;
 }
 
+function insert_order_log($db, $user_id){
+  $sql = "
+    INSERT INTO
+      order_logs(
+        user_id
+      )
+    VALUES(:user_id)
+  ";
+  $params = array(':user_id' => $user_id);
+  return execute_query($db, $sql, $params);
+}
+
+function insert_order_detail($db, $order_log_id, $item_id, $amount, $price){
+  $sql = "
+    INSERT INTO
+      order_details(
+         order_log_id,
+         item_id,
+         amount,
+         purchase_price
+      )
+    VALUES(:order_log_id, :item_id, :amount, :purchase_price)
+  ";
+  $params = array(
+    ':order_log_id' => $order_log_id, 
+    ':item_id' => $item_id, 
+    ':amount' => $amount, 
+    ':purchase_price' => $price,
+  );
+  return execute_query($db, $sql, $params);
+}
