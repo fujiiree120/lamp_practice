@@ -182,35 +182,3 @@ function validate_cart_purchase($carts){
   }
   return true;
 }
-
-function insert_order_log($db, $user_id){
-  $sql = "
-    INSERT INTO
-      order_logs(
-        user_id
-      )
-    VALUES(:user_id)
-  ";
-  $params = array(':user_id' => $user_id);
-  return execute_query($db, $sql, $params);
-}
-
-function insert_order_detail($db, $order_log_id, $item_id, $amount, $price){
-  $sql = "
-    INSERT INTO
-      order_details(
-         order_log_id,
-         item_id,
-         amount,
-         purchase_price
-      )
-    VALUES(:order_log_id, :item_id, :amount, :purchase_price)
-  ";
-  $params = array(
-    ':order_log_id' => $order_log_id, 
-    ':item_id' => $item_id, 
-    ':amount' => $amount, 
-    ':purchase_price' => $price,
-  );
-  return execute_query($db, $sql, $params);
-}
