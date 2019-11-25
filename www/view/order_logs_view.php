@@ -33,9 +33,9 @@
             </td>
           </tr>
           <?php } ?>
-          <?php } ?>
         </tbody>
       </table>
+    <?php } ?>      
   </div>
 </body>
 </html>

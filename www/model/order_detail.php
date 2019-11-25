@@ -24,7 +24,7 @@ function insert_order_detail($db, $order_log_id, $item_id, $amount, $price){
     return execute_query($db, $sql, $params);
   }
 
-  function get_order_detail($db, $order_log_id){
+  function get_order_details($db, $order_log_id){
     $sql = "
     SELECT
         order_details.order_log_id,
@@ -55,11 +55,11 @@ function insert_order_detail($db, $order_log_id, $item_id, $amount, $price){
     return fetch_all_query($db, $sql, $params);
   }
 
-  function checked_user_id($order_detail_user_id, $user_id, $type){
-    if($type === 1){
+  function checked_user_id($order_detail_user_id, $user){
+    if($user['type'] === 1){
       return true;
     }
-    if($order_detail_user_id === $user_id){
+    if($order_detail_user_id === $user['user_id']){
       return true;
     }
     return false;

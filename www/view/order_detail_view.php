@@ -33,9 +33,9 @@
             <td><?php print h($order_detail['subtotal_price']); ?></td>
           </tr>
           <?php } ?>
-          <?php } ?>
         </tbody>
       </table>
+    <?php } ?>
   </div>
 </body>
 </html>
