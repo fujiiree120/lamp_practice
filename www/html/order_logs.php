@@ -15,6 +15,6 @@ if(is_logined() === false){
 $db = get_db_connect();
 $user = get_login_user($db);
 
-$order_logs = get_order_logs($db, $user['user_id']);
+$order_logs = get_order_logs($db, $user);
 header('X-FRAME-OPTIONS: DENY');
 include_once '../view/order_logs_view.php';

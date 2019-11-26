@@ -30,7 +30,7 @@
             <td><?php print h($order_detail['name']); ?></td>
             <td><?php print h($order_detail['purchase_price']); ?></td>
             <td><?php print h($order_detail['amount']); ?></td>
-            <td><?php print h($order_detail['subtotal_price']); ?></td>
+            <td><?php print h($order_detail['amount'] * $order_detail['purchase_price']); ?></td>
           </tr>
           <?php } ?>
         </tbody>
