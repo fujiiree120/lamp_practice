@@ -13,7 +13,10 @@ if(is_logined() === false){
 $db = get_db_connect();
 $user = get_login_user($db);
 //model/item.phpに関数$items(配列)にopenの商品を格納する
-$items = get_open_items($db);
+
+$items_order = get_get("items_order", "created_desc");
+
+$items = get_open_items($db, $items_order);
 
 $token = get_csrf_token();
 

@@ -22,7 +22,7 @@ function get_item($db, $item_id){
   return fetch_query($db, $sql, $params);
 }
 //itemすべて(status=1)を取得するsql文
-function get_items($db, $is_open = false){
+function get_items($db, $is_open = false, $items_order = "created_desc"){
   $sql = '
     SELECT
       item_id, 
@@ -39,6 +39,13 @@ function get_items($db, $is_open = false){
       WHERE status = 1
     ';
   }
+  $items_order_array = array(
+    'created_desc' => ' ORDER BY created DESC ',
+    'price_desc' => ' ORDER BY price DESC ',
+    'price_asc' => ' ORDER BY price ASC '
+  );
+  $sql .= $items_order_array[$items_order];
+ 
   $params = array();
   return fetch_all_query($db, $sql, $params);
 }
@@ -47,8 +54,8 @@ function get_all_items($db){
   return get_items($db);
 }
 //statusがopenのもののみ開ける
-function get_open_items($db){
-  return get_items($db, true);
+function get_open_items($db, $items_order = "created_desc"){
+  return get_items($db, true, $items_order);
 }
 //各関数からエラーがなければregist_item_transactionでitemを登録
 function regist_item($db, $name, $price, $stock, $status, $image){

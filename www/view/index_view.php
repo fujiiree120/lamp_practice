@@ -12,6 +12,19 @@
 
   <div class="container">
     <h1>商品一覧</h1>
+    <form method="get" action="<?php print h(HOME_URL); ?>"  class="order" name="myform">
+      <select name='items_order' id='order_by'>
+        <option value="created_desc">新着順</option>
+        <option value="price_asc" >安い順</option>
+        <option value="price_desc">高い順</option>
+      </select>
+      <input type="submit" value="並び替え">
+    </form>
+    <script>
+      var items_order = '<?php echo $items_order; ?>'
+    </script>
+    
+    <script type="text/javascript" src="../assets/javascript/index.js"></script>
     <?php include VIEW_PATH . 'templates/messages.php'; ?>
 
     <div class="card-deck">
