@@ -1,7 +1,6 @@
-var btn = document.getElementById('order_by');
+let order_by = document.getElementById('order_by');
 
-btn.addEventListener('change', function() {
-    document.myform.submit();
+order_by.addEventListener('change', function() {
+    let my_form = document.getElementById('my_form');
+    my_form.submit();
 }, false);
-
-$("#order_by").val(items_order);
