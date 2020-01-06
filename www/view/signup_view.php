@@ -3,13 +3,13 @@
 <head>
   <?php include VIEW_PATH . 'templates/head.php'; ?>
   <title>サインアップ</title>
-  <link rel="stylesheet" href="<?php print(STYLESHEET_PATH . 'signup.css'); ?>">
+  <link rel="stylesheet" href="<?php print h(STYLESHEET_PATH . 'signup.css'); ?>">
 </head>
 <body>
   <?php include VIEW_PATH . 'templates/header.php'; ?>
   <div class="container">
     <h1>ユーザー登録</h1>
-
+    <!--  エラーがある場合messages.phpを読んでエラーを表示-->
     <?php include VIEW_PATH . 'templates/messages.php'; ?>
 
     <form method="post" action="signup_process.php" class="signup_form mx-auto">
@@ -26,6 +26,7 @@
         <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
       </div>
       <input type="submit" value="登録" class="btn btn-primary">
+      <input type="hidden" name="csrf_token" value="<?php print h($token); ?>">
     </form>
   </div>
 </body>

@@ -3,24 +3,18 @@ require_once '../conf/const.php';
 require_once MODEL_PATH . 'functions.php';
 require_once MODEL_PATH . 'user.php';
 require_once MODEL_PATH . 'item.php';
+require_once MODEL_PATH . 'cart.php';
+require_once MODEL_PATH . 'order_logs.php';
 
 session_start();
-//session(user_idが空白ならログインページへ)
+
 if(is_logined() === false){
   redirect_to(LOGIN_URL);
 }
 
 $db = get_db_connect();
-
 $user = get_login_user($db);
-//$userがadminかのチェック?is_adminで管理者以外の場合はfalseを返してる
-if(is_admin($user) === false){
-  redirect_to(LOGIN_URL);
-}
 
-$items = get_all_items($db);
-
-$token = get_csrf_token();
+$order_logs = get_order_logs($db, $user);
 header('X-FRAME-OPTIONS: DENY');
-
-include_once '../view/admin_view.php';
+include_once '../view/order_logs_view.php';

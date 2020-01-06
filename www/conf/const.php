@@ -1,5 +1,5 @@
 <?php
-
+// ~ PATHに各phpを収納
 define('MODEL_PATH', $_SERVER['DOCUMENT_ROOT'] . '/../model/');
 define('VIEW_PATH', $_SERVER['DOCUMENT_ROOT'] . '/../view/');
 
@@ -21,6 +21,7 @@ define('HOME_URL', '/index.php');
 define('CART_URL', '/cart.php');
 define('FINISH_URL', '/finish.php');
 define('ADMIN_URL', '/admin.php');
+define('ORDER_LOGS_URL', '/order_logs.php');
 
 define('REGEXP_ALPHANUMERIC', '/\A[0-9a-zA-Z]+\z/');
 define('REGEXP_POSITIVE_INTEGER', '/\A([1-9][0-9]*|0)\z/');
